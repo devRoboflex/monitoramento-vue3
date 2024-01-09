@@ -39,9 +39,9 @@
                 <div class="card mb-3"
                     style="width: 50%;height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                     <div style="border-bottom: 1px solid rgb(0, 0, 0)">Status</div>
-                    <div style="display: flex; align-items: center; justify-content: center;">
-                        <span class="spinner-grow spinner-grow-sm"></span>
-                        <div style="margin-left: 0.2rem;">Carregando...</div>
+                    <div id = "statusQuadrado" style="display: flex; align-items: center; justify-content: center;">
+                        <span id ="status" class="spinner-grow spinner-grow-sm"></span>
+                        <div id = "statusEscrita" style="margin-left: 0.2rem;">{{ status }}</div>
                     </div>
                 </div>
             </div>
@@ -59,7 +59,8 @@ export default {
     data() {
         return {
             dadosAleatorios: [],
-            saude: ''
+            saude: '',
+            status: 'Carregando...'
         }
     },
 
@@ -69,10 +70,29 @@ export default {
             this.graficoCorrente(),
             this.graficoEnergia(),
             this.graficoTensao(),
-            this.atualizarSaude()
+            this.atualizarSaude(),
+            this.atualizarStatus()
     },
 
     methods: {
+        atualizarStatus(){
+            setTimeout(() => {
+
+                const opcoesStatus = ["Monitorado!", "Desatualizado"];
+            const indiceAleatorio = Math.floor(Math.random() * opcoesStatus.length);
+            this.status = opcoesStatus[indiceAleatorio];
+
+                if (this.status == "Monitorado!") {
+                document.getElementById('status').style.display = "none";
+                document.getElementById('statusQuadrado').style.backgroundColor = "rgb(0, 190, 0)";
+                document.getElementById('statusEscrita').style.color = "white"
+                }else {
+                    document.getElementById('status').style.display = "none";
+                document.getElementById('statusQuadrado').style.backgroundColor = "rgb(200, 0, 0)";
+                document.getElementById('statusEscrita').style.color = "white"
+                }
+    }, 2000);
+},
 
         atualizarSaude() {
             const opcoesSaude = ["Excelente", "Boa", "Ruim", "Muito Ruim"];
