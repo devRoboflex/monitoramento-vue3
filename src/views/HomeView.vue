@@ -5,7 +5,7 @@
     </header>
      
     
-      <div style="display: flex; width: 100%;">
+    <div style="display: flex; width: 100%;">
         <div class="card mb-3" style="width: 50%; height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
           <div style="border-bottom: 1px solid rgb(0, 0, 0)">Carga</div>
             <div style="padding: 0.3em;">
@@ -13,25 +13,25 @@
               <canvas id="correnteCarregada"></canvas>
               <canvas id="energiaAcumulada"></canvas>
             </div>
-          </div>
+        </div>
     
-          <div style="display: flex; flex-flow: column; width: 50%; height: fit-content; align-self: baseline;">
+            <div style="display: flex; flex-flow: column; width: 50%; height: fit-content; align-self: baseline;">
               <div class="card mb-3" style=" height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                   <div style="border-bottom: 1px solid rgb(0, 0, 0)">Temperatura</div>
-                  <div style="padding: 0.3em;">
-                    <canvas id="temperatura"></canvas>
-                  </div>
-              </div>
+                    <div style="padding: 0.3em;">
+                        <canvas id="temperatura"></canvas>
+                    </div>
+                </div>
     
               <div class="card mb-3" style="height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                   <div style="border-bottom: 1px solid rgb(0, 0, 0)">Tensão</div>
-                  <div style="padding: 0.3em;">
-                    <canvas id="tensao"></canvas>
-                  </div>
+                    <div style="padding: 0.3em;">
+                         <canvas id="tensao"></canvas>
+                    </div>
               </div>
           </div>
-          
-      </div>
+
+    </div>
     
     </template>
     
@@ -42,7 +42,6 @@
       data() {
           return {
               dadosAleatorios: []
-    
           }
       },
     
@@ -82,7 +81,7 @@
                           backgroundColor: 'black',
                           borderColor: 'black',
                           borderWidth: 1.5,
-                          tension: 0,
+                          tension: 0.3,
                           pointRadius: 1,
                       }],
                   },
@@ -112,7 +111,7 @@
                           backgroundColor: 'black',
                           borderColor: 'black',
                           borderWidth: 1.5,
-                          tension: 0,
+                          tension: 0.3,
                           pointRadius: 1,
                       }],
                   },
@@ -142,7 +141,7 @@
                           backgroundColor: 'black',
                           borderColor: 'black',
                           borderWidth: 1.5,
-                          tension: 0,
+                          tension: 0.3,
                           pointRadius: 1,
                       }],
                   },
@@ -172,7 +171,7 @@
                           backgroundColor: 'black',
                           borderColor: 'black',
                           borderWidth: 1.5,
-                          tension: 0,
+                          tension: 0.3,
                           pointRadius: 1,
                       }],
                   },
@@ -202,7 +201,7 @@
                           backgroundColor: 'black',
                           borderColor: 'black',
                           borderWidth: 1.5,
-                          tension: 0,
+                          tension: 0.3,
                           pointRadius: 1,
                       }],
                   },
