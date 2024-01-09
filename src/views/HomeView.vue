@@ -51,7 +51,7 @@
     </div>
     <br><br><br>
 </template>
-    
+
 <script>
 import Chart from 'chart.js/auto';
 
