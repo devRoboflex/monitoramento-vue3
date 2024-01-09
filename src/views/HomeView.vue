@@ -33,7 +33,7 @@
                 <div class="card mb-3"
                     style="width: 50%;height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                     <div style="border-bottom: 1px solid rgb(0, 0, 0)">Saúde</div>
-                    <div style="background-color: rgb(0, 190, 0); color: white;">Boa</div>
+                    <div id="saude" style="color: white;">{{ saude }}</div>
                 </div>
 
                 <div class="card mb-3"
@@ -49,6 +49,7 @@
         </div>
 
     </div>
+    <br><br><br>
 </template>
     
 <script>
@@ -57,7 +58,8 @@ import Chart from 'chart.js/auto';
 export default {
     data() {
         return {
-            dadosAleatorios: []
+            dadosAleatorios: [],
+            saude: ''
         }
     },
 
@@ -66,10 +68,23 @@ export default {
             this.graficoCapacidade(),
             this.graficoCorrente(),
             this.graficoEnergia(),
-            this.graficoTensao()
+            this.graficoTensao(),
+            this.atualizarSaude()
     },
 
     methods: {
+
+        atualizarSaude() {
+            const opcoesSaude = ["Excelente", "Boa", "Ruim", "Muito Ruim"];
+            const indiceAleatorio = Math.floor(Math.random() * opcoesSaude.length);
+            this.saude = opcoesSaude[indiceAleatorio];
+
+        if (this.saude === "Excelente" || this.saude === "Boa") {
+                document.getElementById('saude').style.backgroundColor = "rgb(0, 190, 0)";
+            }else{
+                document.getElementById('saude').style.backgroundColor = "rgb(200, 0, 0)";
+            }
+        },
 
         gerarNumeros() {
 
@@ -245,6 +260,7 @@ header {
 
 canvas {
     max-width: 100%;
-    max-height: 190px;
+    max-height: 150px;
 }
+
 </style>

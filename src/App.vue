@@ -1,11 +1,23 @@
 <template>
 <router-view/>
+<FooterComponent></FooterComponent>
 </template>
 
 <script>
+import FooterComponent from './components/FooterComponent.vue';
 
+export default {
+  data() {
+    return {
+      
+    }
+  },
+
+  components: {
+    FooterComponent : FooterComponent,
+  }
+}
 </script>
-
 <style>
 header {
   background-color: black;
@@ -16,5 +28,7 @@ header {
   text-align: center;
   color: #000000;
 }
-
+.footer {
+    position: absolute;
+}
 </style>
