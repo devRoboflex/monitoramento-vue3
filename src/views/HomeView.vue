@@ -265,7 +265,7 @@ export default {
     }
 }
 </script>
-    
+
 <style>
 header {
     background-color: black;
