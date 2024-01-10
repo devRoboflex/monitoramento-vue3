@@ -3,7 +3,6 @@
         Monitoramento
     </header>
 
-
     <div style="display: flex; width: 100%;">
         <div class="card mb-3" style="width: 50%; height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
             <div style="border-bottom: 1px solid rgb(0, 0, 0)">Carga</div>
