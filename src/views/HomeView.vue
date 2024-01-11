@@ -276,19 +276,8 @@ export default {
 </script>
 
 <style>
-header {
-    background-color: black;
-    color: white;
-}
-
-#app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    text-align: center;
-    color: #000000;
-}
-
 canvas {
     max-width: 100%;
-    max-height: 150px;
+    max-height: 170px;
 }
 </style>
