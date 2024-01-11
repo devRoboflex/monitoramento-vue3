@@ -1,13 +1,36 @@
 <template>
-    <header style="font-size: larger; padding: 0.2em;">
-        Monitoramento
+    <header style="font-size: 25px;">
+        <div>
+            <h2>Monitoramento</h2>
+        </div>
     </header>
-
+    <div style="display: inline-flex; margin-bottom: 1rem;">
+        <div style="margin-left: 1rem;">
+            <span style="font-size: larger;">Data Inicial</span>
+            <div style="display: flex;">
+                <input style="width: 9rem;border: 1px solid black;" type="date" class="form-control" v-model="dataInicial"
+                    @change="coletarDados">
+                <input style="margin-left: 0.2rem ;border: 1px solid black;" type="time" class="form-control"
+                    v-model="tempoInicial" @change="coletarDados">
+            </div>
+        </div>
+        <div style="margin-left: 1rem;">
+            <span style="font-size: larger;">Data Final</span>
+            <div style="display: flex;">
+                <input style="width: 9rem;border: 1px solid black;" type="date" class="form-control" v-model="dataFinal"
+                    @change="coletarDados">
+                <input style="margin-left: 0.2rem ;border: 1px solid black;" type="time" class="form-control"
+                    v-model="tempoFinal" @change="coletarDados">
+            </div>
+        </div>
+    </div>
+    <br>
     <div style="display: flex; width: 100%;">
         <div class="card mb-3" style="width: 50%; height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-            <div style="border-bottom: 1px solid rgb(0, 0, 0)">Carga</div>
+            <div style="border-bottom: 1px solid rgb(0, 0, 0)">Bateria</div>
             <div style="padding: 0.3em;">
-                <canvas id="capacidade"></canvas>
+                <h6 style="text-align: start" >Nivel de bateria</h6>
+                <canvas id="nivelBateria"></canvas>
                 <canvas id="correnteCarregada"></canvas>
                 <canvas id="energiaAcumulada"></canvas>
             </div>
@@ -17,7 +40,7 @@
             <div class="card mb-3" style=" height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                 <div style="border-bottom: 1px solid rgb(0, 0, 0)">Temperatura</div>
                 <div style="padding: 0.3em;">
-                    <canvas id="temperatura"></canvas>
+                    <canvas style="z-index: 8888;" id="temperatura"></canvas>
                 </div>
             </div>
 
@@ -27,7 +50,7 @@
                     <canvas id="tensao"></canvas>
                 </div>
             </div>
-
+            <!-- 
             <div style="display: flex;">
                 <div class="card mb-3"
                     style="width: 50%;height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
@@ -43,7 +66,7 @@
                         <div id="statusEscrita" style="margin-left: 0.2rem;">{{ status }}</div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
         </div>
 
@@ -53,68 +76,69 @@
 
 <script>
 import Chart from 'chart.js/auto';
+import axios from 'axios';
 
 export default {
     data() {
         return {
             dadosAleatorios: [],
             saude: '',
-            status: 'Carregando...'
+            status: 'Carregando...',
+            idDispositivo: 1,
+            tempoInicial: "00:00",
+            tempoFinal: "",
+            dataInicial: "",
+            dataFinal: "",
+            dadosDispositivo: "nada"
         }
     },
 
     mounted() {
-        this.graficoTemperatura(),
-            this.graficoCapacidade(),
-            this.graficoCorrente(),
-            this.graficoEnergia(),
-            this.graficoTensao(),
-            this.atualizarSaude(),
-            this.atualizarStatus()
+        this.coletarDados()
     },
 
     methods: {
-        atualizarStatus() {
-            setTimeout(() => {
 
-                const opcoesStatus = ["Monitorado!", "Desatualizado"];
-                const indiceAleatorio = Math.floor(Math.random() * opcoesStatus.length);
-                this.status = opcoesStatus[indiceAleatorio];
-
-                if (this.status == "Monitorado!") {
-                    document.getElementById('status').style.display = "none";
-                    document.getElementById('statusQuadrado').style.backgroundColor = "rgb(0, 190, 0)";
-                    document.getElementById('statusEscrita').style.color = "white"
-                } else {
-                    document.getElementById('status').style.display = "none";
-                    document.getElementById('statusQuadrado').style.backgroundColor = "rgb(200, 0, 0)";
-                    document.getElementById('statusEscrita').style.color = "white"
-                }
-            }, 2000);
+        extrairHoraDeString(dataString) {
+            const data = new Date(dataString);
+            const horas = ('0' + data.getHours()).slice(-2);
+            const minutos = ('0' + data.getMinutes()).slice(-2);
+            return `${horas}:${minutos}`;
         },
 
-        atualizarSaude() {
-            const opcoesSaude = ["Excelente", "Boa", "Ruim", "Muito Ruim"];
-            const indiceAleatorio = Math.floor(Math.random() * opcoesSaude.length);
-            this.saude = opcoesSaude[indiceAleatorio];
-
-            if (this.saude === "Excelente" || this.saude === "Boa") {
-                document.getElementById('saude').style.backgroundColor = "rgb(0, 190, 0)";
-            } else {
-                document.getElementById('saude').style.backgroundColor = "rgb(200, 0, 0)";
+        coletarDados() {
+            if (this.tempoFinal === "") {
+                this.tempoFinal = new Date().getHours() + ':' + new Date().getMinutes();
+                this.dataFinal = new Date().getFullYear() + '-' + ('0' + new Date().getMonth() + 1).slice(-2) + '-' + new Date().getDate();
+                this.dataInicial = this.dataFinal
             }
-        },
 
-        gerarNumeros() {
+            axios.post('http://192.168.0.6:8000/api/monitor-bateria', {
+                dispositivo_id: this.idDispositivo,
+                dt_inicio: this.dataInicial + ' ' + this.tempoInicial + ':00',
+                dt_fim: this.dataFinal + ' ' + this.tempoFinal + ':00',
+            })
+                .then((response) => {
+                    this.dadosDispositivo = response.data.data;
+                    return this.graficoTemperatura();
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
 
-            for (let i = 0; i < 13; i++) {
-                this.dadosAleatorios.push(Math.floor(Math.random() * 100)); // Gere números aleatórios de 0 a 99
-            }
         },
 
         graficoTemperatura() {
-            this.dadosAleatorios = [];
-            this.gerarNumeros();
+
+            let dados = this.dadosDispositivo.map(item => item.temperatura);
+            dados = dados.map(temp => temp / 10);
+
+            let labels = this.dadosDispositivo.map(item => item.created_at);
+            labels = labels.map(dataString => this.extrairHoraDeString(dataString));
+            labels = labels.map((item) => {
+                return `${item}`;
+            });
+
             const canvas = document.getElementById('temperatura');
             const ctx = canvas.getContext('2d');
             if (canvas.chart) {
@@ -123,9 +147,9 @@ export default {
 
             canvas.chart = new Chart(ctx, {
                 data: {
-                    labels: ["09:00", "09:05", "09:10", "09:15", "09:20", "09:25", "09:30", "09:35", "09:40", "09:45", "09:50", "09:55", "10:00"],
+                    labels: labels,
                     datasets: [{
-                        data: this.dadosAleatorios,
+                        data: dados,
                         type: "line",
                         label: 'Temperatura',
                         backgroundColor: 'black',
@@ -138,14 +162,38 @@ export default {
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            // labels: {
+                            //     boxWidth: 25,
+                            //     boxHeight: 10,
+                            //     color: 'rgb(0, 0, 0)',
+                            //     font: {
+                            //         size: 15,
+                            //         weight: 'bolder'
+                            //     }
+                            // }
+                        }
+                    },
                 },
             });
+            this.nivelBateria();
         },
 
-        graficoCapacidade() {
-            this.dadosAleatorios = [];
-            this.gerarNumeros();
-            const canvas = document.getElementById('capacidade');
+        nivelBateria() {
+
+            let dados = this.dadosDispositivo.map(item => item.bateriaNivel);
+
+            let labels = this.dadosDispositivo.map(item => item.created_at);
+            labels = labels.map(dataString => this.extrairHoraDeString(dataString));
+            labels = labels.map((item) => {
+                return `${item}`;
+            });
+
+            this.dadosAleatorios = dados
+
+            const canvas = document.getElementById('nivelBateria');
             const ctx = canvas.getContext('2d');
             if (canvas.chart) {
                 canvas.chart.destroy();
@@ -153,11 +201,11 @@ export default {
 
             canvas.chart = new Chart(ctx, {
                 data: {
-                    labels: ["09:00", "09:05", "09:10", "09:15", "09:20", "09:25", "09:30", "09:35", "09:40", "09:45", "09:50", "09:55", "10:00"],
+                    labels: labels,
                     datasets: [{
-                        data: this.dadosAleatorios,
+                        data: dados,
                         type: "line",
-                        label: 'Corrente',
+                        label: 'Nivel de Bateria',
                         backgroundColor: 'black',
                         borderColor: 'black',
                         borderWidth: 1.5,
@@ -168,73 +216,29 @@ export default {
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        }
+                    },
                 },
             });
-        },
-
-        graficoCorrente() {
-            this.dadosAleatorios = [];
-            this.gerarNumeros();
-            const canvas = document.getElementById('correnteCarregada');
-            const ctx = canvas.getContext('2d');
-            if (canvas.chart) {
-                canvas.chart.destroy();
-            }
-
-            canvas.chart = new Chart(ctx, {
-                data: {
-                    labels: ["09:00", "09:05", "09:10", "09:15", "09:20", "09:25", "09:30", "09:35", "09:40", "09:45", "09:50", "09:55", "10:00"],
-                    datasets: [{
-                        data: this.dadosAleatorios,
-                        type: "line",
-                        label: 'Corrente Carregada',
-                        backgroundColor: 'black',
-                        borderColor: 'black',
-                        borderWidth: 1.5,
-                        tension: 0.3,
-                        pointRadius: 1,
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                },
-            });
-        },
-
-        graficoEnergia() {
-            this.dadosAleatorios = [];
-            this.gerarNumeros();
-            const canvas = document.getElementById('energiaAcumulada');
-            const ctx = canvas.getContext('2d');
-            if (canvas.chart) {
-                canvas.chart.destroy();
-            }
-
-            canvas.chart = new Chart(ctx, {
-                data: {
-                    labels: ["09:00", "09:05", "09:10", "09:15", "09:20", "09:25", "09:30", "09:35", "09:40", "09:45", "09:50", "09:55", "10:00"],
-                    datasets: [{
-                        data: this.dadosAleatorios,
-                        type: "line",
-                        label: 'Energia Acumulada',
-                        backgroundColor: 'black',
-                        borderColor: 'black',
-                        borderWidth: 1.5,
-                        tension: 0.3,
-                        pointRadius: 1,
-                    }],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                },
-            });
+            this.graficoTensao();
         },
 
         graficoTensao() {
-            this.dadosAleatorios = [];
-            this.gerarNumeros();
+
+            let dados = this.dadosDispositivo.map(item => item.voltagem);
+            dados = dados.map(temp => temp / 100);
+
+            let labels = this.dadosDispositivo.map(item => item.created_at);
+            labels = labels.map(dataString => this.extrairHoraDeString(dataString));
+            labels = labels.map((item) => {
+                return `${item}`;
+            });
+
+            this.dadosAleatorios = dados
+
             const canvas = document.getElementById('tensao');
             const ctx = canvas.getContext('2d');
             if (canvas.chart) {
@@ -243,11 +247,11 @@ export default {
 
             canvas.chart = new Chart(ctx, {
                 data: {
-                    labels: ["09:00", "09:05", "09:10", "09:15", "09:20", "09:25", "09:30", "09:35", "09:40", "09:45", "09:50", "09:55", "10:00"],
+                    labels: labels,
                     datasets: [{
-                        data: this.dadosAleatorios,
+                        data: dados,
                         type: "line",
-                        label: 'Tensão',
+                        label: '',
                         backgroundColor: 'black',
                         borderColor: 'black',
                         borderWidth: 1.5,
@@ -258,9 +262,15 @@ export default {
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        }
+                    },
                 },
             });
         },
+
     }
 }
 </script>
