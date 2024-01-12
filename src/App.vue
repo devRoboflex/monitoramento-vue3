@@ -1,5 +1,5 @@
 <template>
-<router-view/>
+<RouterView/>
 <FooterComponent></FooterComponent>
 </template>
 
@@ -14,8 +14,8 @@ export default {
   },
 
   components: {
-    FooterComponent : FooterComponent,
-  }
+    FooterComponent: FooterComponent,
+}
 }
 </script>
 <style>
@@ -30,5 +30,9 @@ header {
 }
 .footer {
     position: absolute;
+}
+
+i:hover {
+cursor: pointer;
 }
 </style>

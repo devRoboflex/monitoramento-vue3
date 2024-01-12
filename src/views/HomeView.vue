@@ -1,92 +1,184 @@
 <template>
-    <header style="font-size: 25px;">
-        <div>
-            <h2>Monitoramento</h2>
-        </div>
-    </header>
-    <div style="display: inline-flex; margin-bottom: 1rem;">
-        <div style="margin-left: 1rem;">
-            <span style="font-size: larger;">Data Inicial</span>
-            <div style="display: flex;">
-                <input style="width: 9rem;border: 1px solid black;" type="date" class="form-control" v-model="dataInicial"
-                    @change="coletarDados">
-                <input style="margin-left: 0.2rem ;border: 1px solid black;" type="time" class="form-control"
-                    v-model="tempoInicial" @change="coletarDados">
+    <div id="lista" class="container">
+        <div class="row">
+            <div class="col-sm-12" style="text-align: center;">
+                <h3 class="titulo">Dispositivos Monitorados</h3>
+                <i class="fa-solid fa-download"></i>
+                <hr>
+                <br>
             </div>
         </div>
-        <div style="margin-left: 1rem;">
-            <span style="font-size: larger;">Data Final</span>
-            <div style="display: flex;">
-                <input style="width: 9rem;border: 1px solid black;" type="date" class="form-control" v-model="dataFinal"
-                    @change="coletarDados">
-                <input style="margin-left: 0.2rem ;border: 1px solid black;" type="time" class="form-control"
-                    v-model="tempoFinal" @change="coletarDados">
+
+        <!-- <div v-for="dispositivo in listaDispositivos" :key="dispositivo">
+            <input type="radio" class="btn-check" v-model="idDispositivo" name="options-base" :id=dispositivo.id
+                :value=dispositivo.id autocomplete="off">
+            <label style="color: rgb(0, 0, 0);margin-left: 0.5rem; font-size: large; width: 100%;" class="btn" :for=dispositivo.id>
+                <td>
+                    {{ dispositivo.modelo }} 
+                </td>
+                <td>
+                    {{ dispositivo.marca }} 
+                </td>
+                <td>
+                    {{ formatarData(dispositivo.updated_at.slice(0, -17)) + ' ás ' + new Date(dispositivo.updated_at).getHours() + ':' + new Date(dispositivo.updated_at).getMinutes() + 'h'}}
+                </td>
+                <td>
+                    {{ statusBateria[statusBateria.length - 1] }} {{ saudeBateria[saudeBateria.length - 1] }}
+                </td>
+            </label>
+        </div> -->
+
+        <div class="row">
+            <div class="col-sm-12">
+                 <table class="table table-hover">
+
+                    <tr>
+                        <th scope="col">Modelo</th>
+                        <th scope="col">Marca</th>
+                        <th scope="col">Última atualização</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Saúde</th>
+                    </tr>
+                    <tr v-for="dispositivo in listaDispositivos" :key="dispositivo">
+                        <td>
+                            <button style="border: none;" @click="coletarDados()">
+                                {{ dispositivo.modelo }}
+                            </button>
+                        </td>
+                        <td>
+                            <button style="border: none;" @click="coletarDados()">
+                                {{ dispositivo.marca }}
+                            </button>
+                        </td>
+                        <td>
+                            <button style="border: none;" @click="coletarDados()">
+                                {{ formatarData(dispositivo.updated_at.slice(0, -17)) + ' ás ' + new Date(dispositivo.updated_at).getHours() + ':' + new Date(dispositivo.updated_at).getMinutes() + 'h' }}
+                            </button>
+                        </td>
+                        <td>
+                            <button style="border: none;" @click="coletarDados()">
+                                {{ statusBateria[statusBateria.length - 1] }}
+                            </button>
+                        </td>
+                        <td>
+                            <button style="border: none;" @click="coletarDados()">
+                                {{ saudeBateria[saudeBateria.length - 1] }}
+                            </button>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
-    <br>
-    <div style="display: flex; width: 100%;">
-        <div class="card mb-3" style="width: 50%; height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-            <div style="border-bottom: 1px solid rgb(0, 0, 0)">Bateria</div>
-            <div style="padding: 0.3em;">
-                <h6 style="text-align: start" >Nivel de bateria</h6>
-                <canvas id="nivelBateria"></canvas>
-                <canvas id="correnteCarregada"></canvas>
-                <canvas id="energiaAcumulada"></canvas>
-            </div>
-        </div>
+    <div id="painel" style="display: none;">
 
-        <div style="display: flex; flex-flow: column; width: 50%; height: fit-content; align-self: baseline;">
-            <div class="card mb-3" style=" height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-                <div style="border-bottom: 1px solid rgb(0, 0, 0)">Temperatura</div>
-                <div style="padding: 0.3em;">
-                    <canvas style="z-index: 8888;" id="temperatura"></canvas>
-                </div>
+        <header style="font-size: 25px;">
+            <div style="margin-left: 1rem;" class="position-absolute top-0 start-0">
+                <i @click="buscarDispositivos" class="bi bi-house"></i>
             </div>
+            <h2>Painel</h2>
+        </header>
 
-            <div class="card mb-3" style="height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-                <div style="border-bottom: 1px solid rgb(0, 0, 0)">Tensão</div>
-                <div style="padding: 0.3em;">
-                    <canvas id="tensao"></canvas>
-                </div>
+        <div style="display: flex; width: 100%">
+            <div style="display: flex; width: 70%;">
+                <h1 style="align-self: center; margin-left: 1rem; margin-top: 1rem;">Nome do dispositivo</h1>
             </div>
-            <!-- 
-            <div style="display: flex;">
-                <div class="card mb-3"
-                    style="width: 50%;height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Saúde</div>
-                    <div id="saude" style="color: white;">{{ saude }}</div>
-                </div>
-
-                <div class="card mb-3"
-                    style="width: 50%;height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Status</div>
-                    <div id="statusQuadrado" style="display: flex; align-items: center; justify-content: center;">
-                        <span id="status" class="spinner-grow spinner-grow-sm"></span>
-                        <div id="statusEscrita" style="margin-left: 0.2rem;">{{ status }}</div>
+            <div style="display:flex; text-align: center; justify-content: end;">
+                <div style="margin-left: 0.5rem;">
+                    <span style="font-size: larger;">Data Inicial</span>
+                    <div style="display: flex;">
+                        <input style="width: 9rem;border: 1px solid black;" type="date" class="form-control"
+                            v-model="dataInicial" @change="coletarDados">
+                        <input style="margin-left: 0.2rem ;border: 1px solid black;" type="time" class="form-control"
+                            v-model="tempoInicial" @change="coletarDados">
                     </div>
                 </div>
-            </div> -->
+                <div style="margin-left: 0.5rem;">
+                    <span style="font-size: larger;">Data Final</span>
+                    <div style="display: flex;">
+                        <input style="width: 9rem;border: 1px solid black;" type="date" class="form-control"
+                            v-model="dataFinal" @change="coletarDados">
+                        <input style="margin-left: 0.2rem; margin-right: 1rem ;border: 1px solid black;" type="time"
+                            class="form-control" v-model="tempoFinal" @change="coletarDados">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div style="display: flex; width: 100%;">
+            <div style="display: flex;width: 50% ;flex-flow: column; height: fit-content; align-self: baseline;">
+
+                <div class="card mb-3" style=" height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
+                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Bateria</div>
+
+                    <div style="display: flex; margin: 0.5rem 0.5rem 0 0.5rem; font-size: small;">
+
+                        <div class="card mb-3" style="width: 5rem;height: min-content;border: 1px solid rgb(0, 0, 0);">
+                            <div style="border-bottom: 1px solid rgb(0, 0, 0)">Saúde</div>
+                            <div style="color: black;">{{ saudeBateria[saudeBateria.length - 1] }}</div>
+                        </div>
+
+                        <div class="card mb-3"
+                            style="width:6rem; height: min-content;border: 1px solid rgb(0, 0, 0); margin-left: 0.5rem;">
+                            <div style="border-bottom: 1px solid rgb(0, 0, 0)">Status</div>
+                            <div style="display: flex; align-items: center; justify-content: center;">
+                                <div id="statusEscrita" style="margin-left: 0.2rem;">{{ statusBateria[statusBateria.length -
+                                    1] }}</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <canvas id="nivelBateria"></canvas>
+                    </div>
+                </div>
+                <div class="card mb-3" style="height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
+                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Energia</div>
+                    <div style="padding: 0.3em;">
+                        <canvas id="energia"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-flow: column; width: 50%; height: fit-content; align-self: baseline;">
+                <div class="card mb-3" style=" height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
+                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Temperatura</div>
+                    <div style="padding: 0.3em;">
+                        <canvas style="z-index: 8888;" id="temperatura"></canvas>
+                    </div>
+                </div>
+
+                <div class="card mb-3" style="height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
+                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Tensão</div>
+                    <div style="padding: 0.3em;">
+                        <canvas id="tensao"></canvas>
+                    </div>
+                </div>
+
+            </div>
 
         </div>
-
+        <br><br><br>
     </div>
-    <br><br><br>
 </template>
 
 <script>
 import Chart from 'chart.js/auto';
 import axios from 'axios';
+import { format, parseISO } from 'date-fns';
 
 export default {
     data() {
         return {
+            listaDispositivos: [],
             dadosAleatorios: [],
-            saude: '',
-            status: 'Carregando...',
+            statusBateria: '',
             idDispositivo: 1,
+            saudeBateria: '',
             tempoInicial: "00:00",
-            tempoFinal: "",
+            tempoFinal: "23:59",
             dataInicial: "",
             dataFinal: "",
             dadosDispositivo: "nada"
@@ -94,10 +186,25 @@ export default {
     },
 
     mounted() {
-        this.coletarDados()
+
+        this.setarDatas(),
+            this.buscarDispositivos()
     },
 
     methods: {
+
+        buscarDispositivos() {
+            document.getElementById('painel').style.display = "none";
+            document.getElementById('lista').style.display = ""
+
+            axios.get('http://192.168.0.6:8000/api/dispositivo', {})
+                .then((response) => {
+                    this.listaDispositivos = response.data.data;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
 
         extrairHoraDeString(dataString) {
             const data = new Date(dataString);
@@ -106,12 +213,21 @@ export default {
             return `${horas}:${minutos}`;
         },
 
+        formatarData(input) {
+            const data = parseISO(input);
+            return format(data, 'dd/MM/yy');
+        },
+
+        setarDatas() {
+
+            this.dataFinal = new Date().getFullYear() + '-' + ('0' + new Date().getMonth() + 1).slice(-2) + '-' + new Date().getDate();
+            this.dataInicial = new Date().getFullYear() + '-' + ('0' + new Date().getMonth() + 1).slice(-2) + '-' + (new Date().getDate() - 1)
+        },
+
         coletarDados() {
-            if (this.tempoFinal === "") {
-                this.tempoFinal = new Date().getHours() + ':' + new Date().getMinutes();
-                this.dataFinal = new Date().getFullYear() + '-' + ('0' + new Date().getMonth() + 1).slice(-2) + '-' + new Date().getDate();
-                this.dataInicial = this.dataFinal
-            }
+
+            document.getElementById('painel').style.display = "";
+            document.getElementById('lista').style.display = "none"
 
             axios.post('http://192.168.0.6:8000/api/monitor-bateria', {
                 dispositivo_id: this.idDispositivo,
@@ -119,7 +235,7 @@ export default {
                 dt_fim: this.dataFinal + ' ' + this.tempoFinal + ':00',
             })
                 .then((response) => {
-                    this.dadosDispositivo = response.data.data;
+                    this.dadosDispositivo = response.data;
                     return this.graficoTemperatura();
                 })
                 .catch((error) => {
@@ -182,6 +298,9 @@ export default {
         },
 
         nivelBateria() {
+
+            this.saudeBateria = this.dadosDispositivo.map(item => item.bateriaSaude_nome);
+            this.statusBateria = this.dadosDispositivo.map(item => item.bateriaStatus_nome);
 
             let dados = this.dadosDispositivo.map(item => item.bateriaNivel);
 
@@ -269,6 +388,66 @@ export default {
                     },
                 },
             });
+
+            return this.graficoEnergia();
+        },
+
+        graficoEnergia() {
+
+            let dadosEnergiaA = this.dadosDispositivo.map(item => item.energiaAtual_ma);
+            dadosEnergiaA = dadosEnergiaA.map(temp => temp / 100);
+
+            let dadosEnergiaM = this.dadosDispositivo.map(item => item.energiaMedia_ma);
+            dadosEnergiaM = dadosEnergiaM.map(temp => temp / 100);
+
+            let labels = this.dadosDispositivo.map(item => item.created_at);
+            labels = labels.map(dataString => this.extrairHoraDeString(dataString));
+            labels = labels.map((item) => {
+                return `${item}`;
+            });
+
+            this.dadosAleatorios = dadosEnergiaM
+
+            const canvas = document.getElementById('energia');
+            const ctx = canvas.getContext('2d');
+            if (canvas.chart) {
+                canvas.chart.destroy();
+            }
+
+            canvas.chart = new Chart(ctx, {
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dadosEnergiaA,
+                        type: "line",
+                        label: 'Energia Atual',
+                        backgroundColor: 'black',
+                        borderColor: 'black',
+                        borderWidth: 1.5,
+                        tension: 0.3,
+                        pointRadius: 1,
+                    },
+                    {
+                        data: dadosEnergiaM,
+                        type: "line",
+                        label: 'Energia Média',
+                        backgroundColor: 'red',
+                        borderColor: 'red',
+                        borderWidth: 1.5,
+                        tension: 0.3,
+                        pointRadius: 1,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                        }
+                    },
+                },
+            });
         },
 
     }
@@ -278,6 +457,6 @@ export default {
 <style>
 canvas {
     max-width: 100%;
-    max-height: 170px;
+    max-height: 150px;
 }
 </style>
