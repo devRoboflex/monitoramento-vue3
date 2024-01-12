@@ -261,7 +261,7 @@ export default {
                         borderColor: 'black',
                         borderWidth: 1.5,
                         tension: 0.3,
-                        pointRadius: 1,
+                        pointRadius: 2,
                     }],
                 },
                 options: {
@@ -318,7 +318,7 @@ export default {
                         borderColor: 'black',
                         borderWidth: 1.5,
                         tension: 0.3,
-                        pointRadius: 1,
+                        pointRadius: 2,
                     }],
                 },
                 options: {
@@ -343,7 +343,7 @@ export default {
         graficoTensao() {
 
             let dados = this.dadosDispositivo.map(item => item.voltagem);
-            dados = dados.map(temp => temp / 100);
+            dados = dados.map(temp => temp / 1000);
 
             let labels = this.dadosDispositivo.map(item => item.created_at);
             labels = labels.map(dataString => this.extrairHoraDeString(dataString));
@@ -370,7 +370,7 @@ export default {
                         borderColor: 'black',
                         borderWidth: 1.5,
                         tension: 0.3,
-                        pointRadius: 1,
+                        pointRadius: 2,
                     }],
                 },
                 options: {
@@ -420,7 +420,7 @@ export default {
                         borderColor: 'black',
                         borderWidth: 1.5,
                         tension: 0.3,
-                        pointRadius: 1,
+                        pointRadius: 2,
                     },
                     {
                         data: dadosEnergiaM,
@@ -430,7 +430,7 @@ export default {
                         borderColor: 'red',
                         borderWidth: 1.5,
                         tension: 0.3,
-                        pointRadius: 1,
+                        pointRadius: 2,
                     }],
                 },
                 options: {
