@@ -9,65 +9,48 @@
             </div>
         </div>
 
-        <!-- <div v-for="dispositivo in listaDispositivos" :key="dispositivo">
-            <input type="radio" class="btn-check" v-model="idDispositivo" name="options-base" :id=dispositivo.id
-                :value=dispositivo.id autocomplete="off">
-            <label style="color: rgb(0, 0, 0);margin-left: 0.5rem; font-size: large; width: 100%;" class="btn" :for=dispositivo.id>
-                <td>
-                    {{ dispositivo.modelo }} 
-                </td>
-                <td>
-                    {{ dispositivo.marca }} 
-                </td>
-                <td>
-                    {{ formatarData(dispositivo.updated_at.slice(0, -17)) + ' ás ' + new Date(dispositivo.updated_at).getHours() + ':' + new Date(dispositivo.updated_at).getMinutes() + 'h'}}
-                </td>
-                <td>
-                    {{ statusBateria[statusBateria.length - 1] }} {{ saudeBateria[saudeBateria.length - 1] }}
-                </td>
-            </label>
-        </div> -->
 
         <div class="row">
-            <div class="col-sm-12">
-                 <table class="table table-hover">
+            <table class="table">
+                <tr>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Última atualização</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Saúde</th>
+                </tr>
 
-                    <tr>
-                        <th scope="col">Modelo</th>
-                        <th scope="col">Marca</th>
-                        <th scope="col">Última atualização</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Saúde</th>
-                    </tr>
-                    <tr v-for="dispositivo in listaDispositivos" :key="dispositivo">
-                        <td>
-                            <button style="border: none;" @click="coletarDados()">
-                                {{ dispositivo.modelo }}
-                            </button>
-                        </td>
-                        <td>
-                            <button style="border: none;" @click="coletarDados()">
-                                {{ dispositivo.marca }}
-                            </button>
-                        </td>
-                        <td>
-                            <button style="border: none;" @click="coletarDados()">
-                                {{ formatarData(dispositivo.updated_at.slice(0, -17)) + ' ás ' + new Date(dispositivo.updated_at).getHours() + ':' + new Date(dispositivo.updated_at).getMinutes() + 'h' }}
-                            </button>
-                        </td>
-                        <td>
-                            <button style="border: none;" @click="coletarDados()">
-                                {{ statusBateria[statusBateria.length - 1] }}
-                            </button>
-                        </td>
-                        <td>
-                            <button style="border: none;" @click="coletarDados()">
-                                {{ saudeBateria[saudeBateria.length - 1] }}
-                            </button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo">
+                    <td>
+                        <button style="border: none;" @click="(definirId(dispositivo.id))">
+                            {{ dispositivo.modelo }}
+                        </button>
+                    </td>
+                    <td>
+                        <button style="border: none;" @click="(definirId(dispositivo.id))">
+                            {{ dispositivo.marca }}
+                        </button>
+                    </td>
+                    <td>
+                        <button style="border: none;" @click="(definirId(dispositivo.id))">
+                            {{ formatarData(dispositivo.updated_at.slice(0, -17)) + ' ás ' + new
+                                Date(dispositivo.updated_at).getHours() + ':' + new
+                                    Date(dispositivo.updated_at).getMinutes() + 'h' }}
+                        </button>
+                    </td>
+                    <td>
+                        <button style="border: none;" @click="(definirId(dispositivo.id))">
+                            {{ statusBateria[statusBateria.length - 1] }}
+                        </button>
+                    </td>
+                    <td>
+                        <button style="border: none;" @click="(definirId(dispositivo.id))">
+                            {{ saudeBateria[saudeBateria.length - 1] }}
+                        </button>
+                    </td>
+                </tr>
+            </table>
+            <hr>
         </div>
     </div>
     <div id="painel" style="display: none;">
@@ -109,7 +92,7 @@
             <div style="display: flex;width: 50% ;flex-flow: column; height: fit-content; align-self: baseline;">
 
                 <div class="card mb-3" style=" height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Bateria</div>
+                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Bateria (%)</div>
 
                     <div style="display: flex; margin: 0.5rem 0.5rem 0 0.5rem; font-size: small;">
 
@@ -135,7 +118,7 @@
                     </div>
                 </div>
                 <div class="card mb-3" style="height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Energia</div>
+                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Corrente (ma)</div>
                     <div style="padding: 0.3em;">
                         <canvas id="energia"></canvas>
                     </div>
@@ -144,14 +127,14 @@
 
             <div style="display: flex; flex-flow: column; width: 50%; height: fit-content; align-self: baseline;">
                 <div class="card mb-3" style=" height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Temperatura</div>
+                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Temperatura (C°)</div>
                     <div style="padding: 0.3em;">
                         <canvas style="z-index: 8888;" id="temperatura"></canvas>
                     </div>
                 </div>
 
                 <div class="card mb-3" style="height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Tensão</div>
+                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Tensão (v)</div>
                     <div style="padding: 0.3em;">
                         <canvas id="tensao"></canvas>
                     </div>
@@ -192,6 +175,12 @@ export default {
     },
 
     methods: {
+
+        definirId(id) {
+            this.idDispositivo = id;
+
+            return this.coletarDados();
+        },
 
         buscarDispositivos() {
             document.getElementById('painel').style.display = "none";
@@ -338,8 +327,14 @@ export default {
                     plugins: {
                         legend: {
                             display: false,
-                        }
+                        },
                     },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                        }
+                    }
                 },
             });
             this.graficoTensao();
@@ -420,7 +415,7 @@ export default {
                     datasets: [{
                         data: dadosEnergiaA,
                         type: "line",
-                        label: 'Energia Atual',
+                        label: 'Corrente real',
                         backgroundColor: 'black',
                         borderColor: 'black',
                         borderWidth: 1.5,
@@ -430,7 +425,7 @@ export default {
                     {
                         data: dadosEnergiaM,
                         type: "line",
-                        label: 'Energia Média',
+                        label: 'Corrente Média',
                         backgroundColor: 'red',
                         borderColor: 'red',
                         borderWidth: 1.5,
@@ -457,6 +452,6 @@ export default {
 <style>
 canvas {
     max-width: 100%;
-    max-height: 150px;
+    max-height: 200px;
 }
 </style>
