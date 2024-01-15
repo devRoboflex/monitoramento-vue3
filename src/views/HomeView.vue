@@ -5,9 +5,11 @@
                 <h3 class="titulo">Dispositivos Monitorados</h3>
                 <div style="text-align: right;">
                     <button v-b-tooltip.hover title="Baixar Aplicativo!"
-                        style="border: none; background-color: transparent; margin-left: 0.5rem; font-size: 15px; align-self: center; margin-top: 1rem;"
+                        style="border: none; background-color: transparent; margin-left: 0.5rem;margin-bottom: 0.5rem ;font-size: 15px; align-self: center; margin-top: 1rem;"
                         id="botaoDownload">
-                        <i class="fa-solid fa-download"></i>
+                        <a href="https://drive.google.com/file/d/1OThUkpJsquMQweXyxH-RdJ882hioqpOV/view?usp=sharing" style="color: black">
+                            <i class="fa-solid fa-download"></i>
+                        </a>
                     </button>
                 </div>
             </div>
@@ -22,7 +24,7 @@
                     <th scope="col">Saúde</th>
                 </tr>
 
-                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo"
+                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo" class="linhaDispositivo"
                     @click="definirId(dispositivo.id); definirModeloDispositivo(dispositivo.dispositivo_cod)">
                     <td>
                         {{ dispositivo.dispositivo_cod }}
@@ -48,16 +50,15 @@
 
     <div id="painel" style="display: none;">
 
-        <header style="font-size: 25px;">
-            <div style="margin-left: 1rem;" class="position-absolute top-0 start-0">
+        <header style="font-size: 25px; background: linear-gradient(180deg, #2D2D2D 0%, #282929 51.54%, #181818 100%); padding: 0.5rem 0 0.5rem 0;">
+            <div style="margin-left: 1rem; margin-top: 0.5rem;" class="position-absolute top-0 start-0">
                 <i @click="buscarDispositivos()" class="bi bi-house"></i>
             </div>
-            <h2>Painel</h2>
+            <h2>Histórico de parâmetros</h2>
         </header>
 
         <div style="display: flex; width: 100%">
-            <div style="display: flex; width: 70%;">
-                {{ teste }}
+            <div style="display: flex; width: 50%;">
                 <h1 style="align-self: center; margin-left: 1rem; margin-top: 1rem;">{{ modeloDispositivo }}</h1>
                 <button v-b-tooltip.hover title="Baixar XML!"
                     style="border: none; background-color: transparent; margin-left: 0.5rem; font-size: 20px; align-self: center; margin-top: 1rem;"
@@ -66,7 +67,7 @@
                 </button>
 
             </div>
-            <div style="display:flex; text-align: center; justify-content: end;">
+            <div style="display:flex; text-align: center; justify-content: end; margin-right: 1rem; width: 50%;">
                 <div style="margin-left: 0.5rem;">
                     <span style="font-size: larger;">Data Inicial</span>
                     <div style="display: flex;">
@@ -81,7 +82,7 @@
                     <div style="display: flex;">
                         <input style="width: 9rem;border: 1px solid black;" type="date" class="form-control"
                             v-model="dataFinal" @change="coletarDados">
-                        <input style="margin-left: 0.2rem; margin-right: 1rem ;border: 1px solid black;" type="time"
+                        <input style="margin-left: 0.2rem;border: 1px solid black;" type="time"
                             class="form-control" v-model="tempoFinal" @change="coletarDados">
                     </div>
                 </div>
@@ -543,5 +544,10 @@ tr:hover {
     color: red;
     font-size: larger;
     font-weight: bolder;
+}
+
+.linhaDispositivo:hover {
+    transition: 150ms linear;
+    transform: scale(1.1);
 }
 </style>
