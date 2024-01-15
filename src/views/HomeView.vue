@@ -122,11 +122,11 @@
                 </div>
                 <div class="card mb-3" style="height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                     <div style="border-bottom: 1px solid rgb(0, 0, 0)">Corrente (ma)</div>
-                    <div style="padding: 0.3em;" id="avisoEnergia" class="aviso">
+                    <div style="padding: 0.3em;" id="avisoCorrente" class="aviso">
                         Nenhum dado encontrado no período selecionado!
                     </div>
-                    <div style="padding: 0.3em;" id="canvaEnergia">
-                        <canvas id="energia"></canvas>
+                    <div style="padding: 0.3em;" id="canvaCorrente">
+                        <canvas id="Corrente"></canvas>
                     </div>
                 </div>
             </div>
@@ -177,7 +177,6 @@ export default {
             dataFinal: "",
             dadosDispositivo: "",
             modeloDispositivo: "",
-            teste: ""
         }
     },
 
@@ -225,12 +224,12 @@ export default {
             document.getElementById('canvaTemperatura').style.display = "none";
             document.getElementById('canvaBateria').style.display = "none";
             document.getElementById('canvaTensao').style.display = "none";
-            document.getElementById('canvaEnergia').style.display = "none";
+            document.getElementById('canvaCorrente').style.display = "none";
 
             document.getElementById('avisoTemperatura').style.display = "";
             document.getElementById('avisoBateria').style.display = "";
             document.getElementById('avisoTensao').style.display = "";
-            document.getElementById('avisoEnergia').style.display = "";
+            document.getElementById('avisoCorrente').style.display = "";
         },
 
         definirId(id) {
@@ -461,20 +460,20 @@ export default {
                 },
             });
 
-            return this.graficoEnergia();
+            return this.graficoCorrente();
         },
 
-        graficoEnergia() {
+        graficoCorrente() {
             if (this.dadosDispositivo != "") {
-                document.getElementById('canvaEnergia').style.display = "";
-                document.getElementById('avisoEnergia').style.display = "none"
+                document.getElementById('canvaCorrente').style.display = "";
+                document.getElementById('avisoCorrente').style.display = "none"
             }
 
-            let dadosEnergiaA = this.dadosDispositivo.map(item => item.energiaAtual_ma);
-            dadosEnergiaA = dadosEnergiaA.map(temp => temp / 100);
+            let dadosCorrenteA = this.dadosDispositivo.map(item => item.energiaAtual_ma);
+            dadosCorrenteA = dadosCorrenteA.map(temp => temp / 100);
 
-            let dadosEnergiaM = this.dadosDispositivo.map(item => item.energiaMedia_ma);
-            dadosEnergiaM = dadosEnergiaM.map(temp => temp / 100);
+            let dadosCorrenteM = this.dadosDispositivo.map(item => item.energiaMedia_ma);
+            dadosCorrenteM = dadosCorrenteM.map(temp => temp / 100);
 
             let labels = this.dadosDispositivo.map(item => item.created_at);
             labels = labels.map(dataString => this.extrairHoraDeString(dataString));
@@ -482,9 +481,9 @@ export default {
                 return `${item}`;
             });
 
-            this.dadosAleatorios = dadosEnergiaM
+            this.dadosAleatorios = dadosCorrenteM
 
-            const canvas = document.getElementById('energia');
+            const canvas = document.getElementById('Corrente');
             const ctx = canvas.getContext('2d');
             if (canvas.chart) {
                 canvas.chart.destroy();
@@ -494,7 +493,7 @@ export default {
                 data: {
                     labels: labels,
                     datasets: [{
-                        data: dadosEnergiaA,
+                        data: dadosCorrenteA,
                         type: "line",
                         label: 'Corrente real',
                         backgroundColor: 'black',
@@ -504,7 +503,7 @@ export default {
                         pointRadius: 2,
                     },
                     {
-                        data: dadosEnergiaM,
+                        data: dadosCorrenteM,
                         type: "line",
                         label: 'Corrente Média',
                         backgroundColor: 'red',
