@@ -20,33 +20,23 @@
                     <th scope="col">Saúde</th>
                 </tr>
 
-                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo">
-                    <td>
-                        <button style="border: none;" @click="(definirId(dispositivo.id))">
+                    <tr v-for="dispositivo in listaDispositivos" :key="dispositivo" @click="definirId(dispositivo.id)">
+                        <td>
                             {{ dispositivo.modelo }}
-                        </button>
                     </td>
                     <td>
-                        <button style="border: none;" @click="(definirId(dispositivo.id))">
                             {{ dispositivo.marca }}
-                        </button>
                     </td>
                     <td>
-                        <button style="border: none;" @click="(definirId(dispositivo.id))">
-                            {{ formatarData(dispositivo.updated_at.slice(0, -17)) + ' ás ' + new
+                            {{ formatarData(dispositivo.updated_at.slice(0, -17)) + ' às ' + new
                                 Date(dispositivo.updated_at).getHours() + ':' + new
                                     Date(dispositivo.updated_at).getMinutes() + 'h' }}
-                        </button>
                     </td>
                     <td>
-                        <button style="border: none;" @click="(definirId(dispositivo.id))">
                             {{ statusBateria[statusBateria.length - 1] }}
-                        </button>
                     </td>
                     <td>
-                        <button style="border: none;" @click="(definirId(dispositivo.id))">
                             {{ saudeBateria[saudeBateria.length - 1] }}
-                        </button>
                     </td>
                 </tr>
             </table>
@@ -453,5 +443,8 @@ export default {
 canvas {
     max-width: 100%;
     max-height: 200px;
+}
+tr:hover {
+cursor: pointer;
 }
 </style>
