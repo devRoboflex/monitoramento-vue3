@@ -20,41 +20,42 @@
                     <th scope="col">Saúde</th>
                 </tr>
 
-                    <tr v-for="dispositivo in listaDispositivos" :key="dispositivo" @click="definirId(dispositivo.id)">
-                        <td>
-                            {{ dispositivo.modelo }}
+                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo" @click="definirId(dispositivo.id); definirModeloDispositivo(dispositivo.modelo)">
+                    <td>
+                        {{ dispositivo.modelo }}
                     </td>
                     <td>
-                            {{ dispositivo.marca }}
+                        {{ dispositivo.marca }}
                     </td>
                     <td>
-                            {{ formatarData(dispositivo.updated_at.slice(0, -17)) + ' às ' + new
-                                Date(dispositivo.updated_at).getHours() + ':' + new
-                                    Date(dispositivo.updated_at).getMinutes() + 'h' }}
+                        {{ formatarData(dispositivo.updated_at.slice(0, -17)) + ' às ' + new
+                            Date(dispositivo.updated_at).getHours() + ':' + new
+                                Date(dispositivo.updated_at).getMinutes() + 'h' }}
                     </td>
                     <td>
-                            {{ statusBateria[statusBateria.length - 1] }}
+                        {{ statusBateria[statusBateria.length - 1] }}
                     </td>
                     <td>
-                            {{ saudeBateria[saudeBateria.length - 1] }}
+                        {{ saudeBateria[saudeBateria.length - 1] }}
                     </td>
                 </tr>
             </table>
             <hr>
         </div>
     </div>
+
     <div id="painel" style="display: none;">
 
         <header style="font-size: 25px;">
             <div style="margin-left: 1rem;" class="position-absolute top-0 start-0">
-                <i @click="buscarDispositivos" class="bi bi-house"></i>
+                <i @click="buscarDispositivos()" class="bi bi-house"></i>
             </div>
             <h2>Painel</h2>
         </header>
 
         <div style="display: flex; width: 100%">
             <div style="display: flex; width: 70%;">
-                <h1 style="align-self: center; margin-left: 1rem; margin-top: 1rem;">Nome do dispositivo</h1>
+                <h1 style="align-self: center; margin-left: 1rem; margin-top: 1rem;">{{ modeloDispositivo }}</h1>
             </div>
             <div style="display:flex; text-align: center; justify-content: end;">
                 <div style="margin-left: 0.5rem;">
@@ -99,17 +100,22 @@
                                     1] }}</div>
                             </div>
                         </div>
-
                     </div>
 
-                    <div>
+                    <div style="padding: 0.3em;" id="avisoBateria" class="aviso">
+                        Nenhum dado encontrado no período selecionado!
+                    </div>
 
+                    <div id="canvaBateria">
                         <canvas id="nivelBateria"></canvas>
                     </div>
                 </div>
                 <div class="card mb-3" style="height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                     <div style="border-bottom: 1px solid rgb(0, 0, 0)">Corrente (ma)</div>
-                    <div style="padding: 0.3em;">
+                    <div style="padding: 0.3em;" id="avisoEnergia" class="aviso">
+                        Nenhum dado encontrado no período selecionado!
+                    </div>
+                    <div style="padding: 0.3em;" id="canvaEnergia">
                         <canvas id="energia"></canvas>
                     </div>
                 </div>
@@ -118,14 +124,20 @@
             <div style="display: flex; flex-flow: column; width: 50%; height: fit-content; align-self: baseline;">
                 <div class="card mb-3" style=" height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                     <div style="border-bottom: 1px solid rgb(0, 0, 0)">Temperatura (C°)</div>
-                    <div style="padding: 0.3em;">
+                    <div style="padding: 0.3em;" id="avisoTemperatura" class="aviso">
+                        Nenhum dado encontrado no período selecionado!
+                    </div>
+                    <div style="padding: 0.3em;" id="canvaTemperatura">
                         <canvas style="z-index: 8888;" id="temperatura"></canvas>
                     </div>
                 </div>
 
                 <div class="card mb-3" style="height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                     <div style="border-bottom: 1px solid rgb(0, 0, 0)">Tensão (v)</div>
-                    <div style="padding: 0.3em;">
+                    <div style="padding: 0.3em;" id="avisoTensao" class="aviso">
+                        Nenhum dado encontrado no período selecionado!
+                    </div>
+                    <div style="padding: 0.3em;" id="canvaTensao">
                         <canvas id="tensao"></canvas>
                     </div>
                 </div>
@@ -148,13 +160,14 @@ export default {
             listaDispositivos: [],
             dadosAleatorios: [],
             statusBateria: '',
-            idDispositivo: 1,
+            idDispositivo: '',
             saudeBateria: '',
             tempoInicial: "00:00",
             tempoFinal: "23:59",
             dataInicial: "",
             dataFinal: "",
-            dadosDispositivo: "nada"
+            dadosDispositivo: "",
+            modeloDispositivo: ""
         }
     },
 
@@ -165,6 +178,22 @@ export default {
     },
 
     methods: {
+
+        definirModeloDispositivo(nome) {
+            this.modeloDispositivo = nome;
+        },
+
+        mostrarAviso() {
+            document.getElementById('canvaTemperatura').style.display = "none";
+            document.getElementById('canvaBateria').style.display = "none";
+            document.getElementById('canvaTensao').style.display = "none";
+            document.getElementById('canvaEnergia').style.display = "none";
+
+            document.getElementById('avisoTemperatura').style.display = "";
+            document.getElementById('avisoBateria').style.display = "";
+            document.getElementById('avisoTensao').style.display = "";
+            document.getElementById('avisoEnergia').style.display = "";
+        },
 
         definirId(id) {
             this.idDispositivo = id;
@@ -205,6 +234,8 @@ export default {
 
         coletarDados() {
 
+            this.dadosDispositivo = ""
+
             document.getElementById('painel').style.display = "";
             document.getElementById('lista').style.display = "none"
 
@@ -220,10 +251,18 @@ export default {
                 .catch((error) => {
                     console.error(error);
                 });
-
+            if (this.dadosDispositivo == "") {
+                return this.mostrarAviso();
+            }
         },
 
         graficoTemperatura() {
+
+            if (this.dadosDispositivo != "") {
+                document.getElementById('canvaTemperatura').style.display = "";
+                document.getElementById('avisoTemperatura').style.display = "none"
+            }
+
 
             let dados = this.dadosDispositivo.map(item => item.temperatura);
             dados = dados.map(temp => temp / 10);
@@ -277,6 +316,11 @@ export default {
         },
 
         nivelBateria() {
+
+            if (this.dadosDispositivo != "") {
+                document.getElementById('canvaBateria').style.display = "";
+                document.getElementById('avisoBateria').style.display = "none"
+            }
 
             this.saudeBateria = this.dadosDispositivo.map(item => item.bateriaSaude_nome);
             this.statusBateria = this.dadosDispositivo.map(item => item.bateriaStatus_nome);
@@ -332,6 +376,11 @@ export default {
 
         graficoTensao() {
 
+            if (this.dadosDispositivo != "") {
+                document.getElementById('canvaTensao').style.display = "";
+                document.getElementById('avisoTensao').style.display = "none"
+            }
+
             let dados = this.dadosDispositivo.map(item => item.voltagem);
             dados = dados.map(temp => temp / 1000);
 
@@ -378,6 +427,10 @@ export default {
         },
 
         graficoEnergia() {
+            if (this.dadosDispositivo != "") {
+                document.getElementById('canvaEnergia').style.display = "";
+                document.getElementById('avisoEnergia').style.display = "none"
+            }
 
             let dadosEnergiaA = this.dadosDispositivo.map(item => item.energiaAtual_ma);
             dadosEnergiaA = dadosEnergiaA.map(temp => temp / 100);
@@ -444,7 +497,14 @@ canvas {
     max-width: 100%;
     max-height: 200px;
 }
+
 tr:hover {
-cursor: pointer;
+    cursor: pointer;
+}
+
+.aviso {
+    color: red;
+    font-size: larger;
+    font-weight: bolder;
 }
 </style>
