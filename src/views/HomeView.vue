@@ -1,28 +1,31 @@
 <template>
     <div id="lista" class="container">
-        <div class="row">
-            <div class="col-sm-12" style="text-align: center;">
+        <div>
+            <div style="text-align: center; border-bottom: 1; margin-top: 1rem;">
                 <h3 class="titulo">Dispositivos Monitorados</h3>
-                <i class="fa-solid fa-download"></i>
-                <hr>
-                <br>
+                <div style="text-align: right;">
+                    <button v-b-tooltip.hover title="Baixar Aplicativo!"
+                        style="border: none; background-color: transparent; margin-left: 0.5rem; font-size: 15px; align-self: center; margin-top: 1rem;"
+                        id="botaoDownload">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                </div>
             </div>
         </div>
-
-
         <div class="row">
             <table class="table">
                 <tr>
-                    <th scope="col">Modelo</th>
+                    <th scope="col">Código do Dispositivo</th>
                     <th scope="col">Marca</th>
                     <th scope="col">Última atualização</th>
                     <th scope="col">Status</th>
                     <th scope="col">Saúde</th>
                 </tr>
 
-                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo" @click="definirId(dispositivo.id); definirModeloDispositivo(dispositivo.modelo)">
+                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo"
+                    @click="definirId(dispositivo.id); definirModeloDispositivo(dispositivo.dispositivo_cod)">
                     <td>
-                        {{ dispositivo.modelo }}
+                        {{ dispositivo.dispositivo_cod }}
                     </td>
                     <td>
                         {{ dispositivo.marca }}
@@ -33,14 +36,13 @@
                                 Date(dispositivo.updated_at).getMinutes() + 'h' }}
                     </td>
                     <td>
-                        {{ statusBateria[statusBateria.length - 1] }}
+                        {{ dispositivo.bateriaStatus_nome }}
                     </td>
                     <td>
-                        {{ saudeBateria[saudeBateria.length - 1] }}
+                        {{ dispositivo.bateriaSaude_nome }}
                     </td>
                 </tr>
             </table>
-            <hr>
         </div>
     </div>
 
@@ -55,7 +57,14 @@
 
         <div style="display: flex; width: 100%">
             <div style="display: flex; width: 70%;">
+                {{ teste }}
                 <h1 style="align-self: center; margin-left: 1rem; margin-top: 1rem;">{{ modeloDispositivo }}</h1>
+                <button v-b-tooltip.hover title="Baixar XML!"
+                    style="border: none; background-color: transparent; margin-left: 0.5rem; font-size: 20px; align-self: center; margin-top: 1rem;"
+                    @click="baixarXML()" id="botaoDownload">
+                    <i class="bi bi-file-earmark-arrow-down"></i>
+                </button>
+
             </div>
             <div style="display:flex; text-align: center; justify-content: end;">
                 <div style="margin-left: 0.5rem;">
@@ -141,7 +150,6 @@
                         <canvas id="tensao"></canvas>
                     </div>
                 </div>
-
             </div>
 
         </div>
@@ -167,7 +175,8 @@ export default {
             dataInicial: "",
             dataFinal: "",
             dadosDispositivo: "",
-            modeloDispositivo: ""
+            modeloDispositivo: "",
+            teste: ""
         }
     },
 
@@ -178,6 +187,34 @@ export default {
     },
 
     methods: {
+        baixarXML() {
+            axios.post('http://192.168.0.6:8000/api/relatorio/monitorar-bateria', {
+                dispositivo_id: this.idDispositivo,
+                dt_inicio: this.dataInicial + ' ' + this.tempoInicial + ':00',
+                dt_fim: this.dataFinal + ' ' + this.tempoFinal + ':00',
+            })
+                .then((response) => {
+                    // Cria um blob a partir dos dados recebidos
+                    const blob = new Blob([response.data], { type: 'application/zip' });
+
+                    // Cria uma URL temporária para o blob
+                    const url = window.URL.createObjectURL(blob);
+
+                    // Cria um link para simular o clique e fazer o download
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'arquivo.zip'; // Pode personalizar o nome do arquivo aqui
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // Libera a URL e remove o link
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(link);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
 
         definirModeloDispositivo(nome) {
             this.modeloDispositivo = nome;
