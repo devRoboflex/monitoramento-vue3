@@ -41,9 +41,9 @@
                         {{ dispositivo.marca }}
                     </td>
                     <td>
-                        {{ formatarData(dispositivo.updated_at.slice(0, -17)) + ' às ' + new
-                            Date(dispositivo.updated_at).getHours() + ':' + new
-                                Date(dispositivo.updated_at).getMinutes() + 'h' }}
+                        {{ formatarData(dispositivo.created_at.slice(0, -17)) + ' às ' + new
+                            Date(dispositivo.created_at).getHours() + ':' + new
+                            Date(dispositivo.created_at).getMinutes() + 'h' }}
                     </td>
                     <td>
                         {{ dispositivo.bateriaStatus_nome }}
@@ -55,7 +55,7 @@
             </table>
         </div>
     </div>
-
+<!-- ---------------------- -->
     <div id="painel" style="display: none;">
 
         <div style="display: flex; width: 100%">
@@ -94,10 +94,9 @@
             <div style="display: flex;width: 50% ;flex-flow: column; height: fit-content; align-self: baseline;">
 
                 <div class="card mb-3" style=" height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
-                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Bateria (%)</div>
+                    <div style="border-bottom: 1px solid rgb(0, 0, 0)">Carga da Bateria (%)</div>
 
                     <div style="display: flex; margin: 0.5rem 0.5rem 0 0.5rem; font-size: small;">
-
                         <div class="card mb-3" style="width: 5rem;height: min-content;border: 1px solid rgb(0, 0, 0);">
                             <div style="border-bottom: 1px solid rgb(0, 0, 0)">Saúde</div>
                             <div style="color: black;">{{ saudeBateria[saudeBateria.length - 1] }}</div>
@@ -178,6 +177,7 @@ export default {
             dataFinal: "",
             dadosDispositivo: "",
             modeloDispositivo: "",
+            pointRadius: 1
         }
     },
 
@@ -189,7 +189,7 @@ export default {
 
     methods: {
         baixarXML() {
-            axios.post('http://192.168.0.6:8000/api/relatorio/monitorar-bateria', {
+            axios.post('http://192.168.0.5:8000/api/relatorio/monitorar-bateria', {
                 dispositivo_id: this.idDispositivo,
                 dt_inicio: this.dataInicial + ' ' + this.tempoInicial + ':00',
                 dt_fim: this.dataFinal + ' ' + this.tempoFinal + ':00',
@@ -247,7 +247,7 @@ export default {
             document.getElementById('painel').style.display = "none";
             document.getElementById('lista').style.display = ""
 
-            axios.get('http://192.168.0.6:8000/api/dispositivo', {})
+            axios.get('http://192.168.0.5:8000/api/dispositivo', {})
                 .then((response) => {
                     this.listaDispositivos = response.data.data;
                 })
@@ -283,7 +283,7 @@ export default {
             document.getElementById('painel').style.display = "";
             document.getElementById('lista').style.display = "none"
 
-            axios.post('http://192.168.0.6:8000/api/monitor-bateria', {
+            axios.post('http://192.168.0.5:8000/api/monitor-bateria', {
                 dispositivo_id: this.idDispositivo,
                 dt_inicio: this.dataInicial + ' ' + this.tempoInicial + ':00',
                 dt_fim: this.dataFinal + ' ' + this.tempoFinal + ':00',
@@ -313,9 +313,13 @@ export default {
 
             let labels = this.dadosDispositivo.map(item => item.created_at);
             labels = labels.map(dataString => this.extrairHoraDeString(dataString));
-            labels = labels.map((item) => {
-                return `${item}`;
-            });
+
+            if (labels.length > 100) {
+                this.pointRadius = 0
+            }else{
+                this.pointRadius = 2
+            }
+
 
             const canvas = document.getElementById('temperatura');
             const ctx = canvas.getContext('2d');
@@ -332,9 +336,9 @@ export default {
                         label: 'Temperatura',
                         backgroundColor: 'black',
                         borderColor: 'black',
-                        borderWidth: 1.5,
+                        borderWidth: 2.5,
                         tension: 0.3,
-                        pointRadius: 2,
+                        pointRadius: this.pointRadius,
                     }],
                 },
                 options: {
@@ -373,11 +377,12 @@ export default {
 
             let labels = this.dadosDispositivo.map(item => item.created_at);
             labels = labels.map(dataString => this.extrairHoraDeString(dataString));
-            labels = labels.map((item) => {
-                return `${item}`;
-            });
 
-            this.dadosAleatorios = dados
+            if (labels.length > 100) {
+                this.pointRadius = 0
+            }else{
+                this.pointRadius = 2
+            }
 
             const canvas = document.getElementById('nivelBateria');
             const ctx = canvas.getContext('2d');
@@ -394,9 +399,9 @@ export default {
                         label: 'Nivel de Bateria',
                         backgroundColor: 'black',
                         borderColor: 'black',
-                        borderWidth: 1.5,
+                        borderWidth: 2.5,
                         tension: 0.3,
-                        pointRadius: 2,
+                        pointRadius: this.pointRadius,
                     }],
                 },
                 options: {
@@ -430,11 +435,12 @@ export default {
 
             let labels = this.dadosDispositivo.map(item => item.created_at);
             labels = labels.map(dataString => this.extrairHoraDeString(dataString));
-            labels = labels.map((item) => {
-                return `${item}`;
-            });
 
-            this.dadosAleatorios = dados
+            if (labels.length > 100) {
+                this.pointRadius = 0
+            }else{
+                this.pointRadius = 2
+            }
 
             const canvas = document.getElementById('tensao');
             const ctx = canvas.getContext('2d');
@@ -451,9 +457,9 @@ export default {
                         label: '',
                         backgroundColor: 'black',
                         borderColor: 'black',
-                        borderWidth: 1.5,
+                        borderWidth: 2.5,
                         tension: 0.3,
-                        pointRadius: 2,
+                        pointRadius: this.pointRadius,
                     }],
                 },
                 options: {
@@ -484,11 +490,12 @@ export default {
 
             let labels = this.dadosDispositivo.map(item => item.created_at);
             labels = labels.map(dataString => this.extrairHoraDeString(dataString));
-            labels = labels.map((item) => {
-                return `${item}`;
-            });
 
-            this.dadosAleatorios = dadosCorrenteM
+            if (labels.length > 100) {
+                this.pointRadius = 0
+            }else{
+                this.pointRadius = 2
+            }
 
             const canvas = document.getElementById('Corrente');
             const ctx = canvas.getContext('2d');
@@ -505,9 +512,9 @@ export default {
                         label: 'Corrente real',
                         backgroundColor: 'black',
                         borderColor: 'black',
-                        borderWidth: 1.5,
+                        borderWidth: 2.5,
                         tension: 0.3,
-                        pointRadius: 2,
+                        pointRadius: this.pointRadius,
                     },
                     {
                         data: dadosCorrenteM,
@@ -515,9 +522,9 @@ export default {
                         label: 'Corrente Média',
                         backgroundColor: 'red',
                         borderColor: 'red',
-                        borderWidth: 1.5,
+                        borderWidth: 2.5,
                         tension: 0.3,
-                        pointRadius: 2,
+                        pointRadius: this.pointRadius,
                     }],
                 },
                 options: {
