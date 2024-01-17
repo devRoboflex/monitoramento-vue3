@@ -5,7 +5,7 @@
             <i @click="buscarDispositivos()" class="bi bi-house"></i>
         </div>
         <h2 id="tituloHistorico" style="display: none;">Histórico de parâmetros</h2>
-        <h2 id="tituloLista" >Dispositivos Monitorados</h2>
+        <h2 id="tituloLista">Dispositivos Monitorados</h2>
     </header>
     <div id="lista" class="container">
         <div>
@@ -14,7 +14,7 @@
                     <button v-b-tooltip.hover title="Baixar Aplicativo!"
                         style="border: none; background-color: transparent; margin-left: 0.5rem;margin-bottom: 0.5rem ;font-size: 15px; align-self: center; margin-top: 1rem;"
                         id="botaoDownload">
-                        <a href="https://drive.google.com/file/d/1OThUkpJsquMQweXyxH-RdJ882hioqpOV/view?usp=sharing"
+                        <a href="https://drive.google.com/file/d/12uAh_nx25IjGL4cLsoeYTRZPo29bec6o/view?usp=sharing"
                             style="color: black">
                             <i class="fa-solid fa-download"></i>
                         </a>
@@ -30,9 +30,10 @@
                     <th scope="col">Periodo do último monitoramento</th>
                     <th scope="col">Status</th>
                     <th scope="col">Saúde</th>
-                </tr> 
+                </tr>
 
-                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo" class="linhaDispositivo" style="border-radius: 5px;"
+                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo" class="linhaDispositivo"
+                    style="border-radius: 5px;"
                     @click="definirId(dispositivo.id); definirModeloDispositivo(dispositivo.dispositivo_cod)">
                     <td>
                         {{ dispositivo.dispositivo_cod }}
@@ -45,7 +46,9 @@
                             Date(dispositivo.dt_inicio).getHours() + ':' + new
                             Date(dispositivo.dt_inicio).getMinutes() + 'h' }} -->
 
-                             {{ formatarData(dispositivo.dt_inicio.slice(0, -9))  + " às " + dispositivo.dt_inicio.slice(11).slice(0, -3) + "h - " }} {{ dispositivo.dt_fim == null ? 'Em andamento...' : formatarData(dispositivo.dt_fim.slice(0, -9))  + " às " + dispositivo.dt_fim.slice(11).slice(0, -3) }}
+                        {{ formatarData(dispositivo.dt_inicio.slice(0, -9)) + " às " +
+                            dispositivo.dt_inicio.slice(11).slice(0, -3) + "h - " }} {{ dispositivo.dt_fim == null ? 'Em andamento...' : formatarData(dispositivo.dt_fim.slice(0, -9)) + " às " +
+                    dispositivo.dt_fim.slice(11).slice(0, -3) }}
 
                     </td>
                     <td>
@@ -58,7 +61,7 @@
             </table>
         </div>
     </div>
-<!-- ---------------------- -->
+    <!-- ---------------------- -->
     <div id="painel" style="display: none;">
 
         <div style="display: flex; width: 100%">
@@ -206,10 +209,10 @@ export default {
                     // Cria um link temporário
                     const link = document.createElement('a');
                     link.href = window.URL.createObjectURL(blob);
-                    link.download = `Relatório_dispositivo_${dispositivo}.xlsx`;0,
+                    link.download = `Relatório_dispositivo_${dispositivo}.xlsx`; 0,
 
-                    // Adiciona o link ao documento
-                    document.body.appendChild(link);
+                        // Adiciona o link ao documento
+                        document.body.appendChild(link);
 
                     // Dispara o clique no link para iniciar o download
                     link.click();
@@ -319,7 +322,7 @@ export default {
 
             if (labels.length > 100) {
                 this.pointRadius = 0
-            }else{
+            } else {
                 this.pointRadius = 2
             }
 
@@ -383,7 +386,7 @@ export default {
 
             if (labels.length > 100) {
                 this.pointRadius = 0
-            }else{
+            } else {
                 this.pointRadius = 2
             }
 
@@ -441,7 +444,7 @@ export default {
 
             if (labels.length > 100) {
                 this.pointRadius = 0
-            }else{
+            } else {
                 this.pointRadius = 2
             }
 
@@ -496,7 +499,7 @@ export default {
 
             if (labels.length > 100) {
                 this.pointRadius = 0
-            }else{
+            } else {
                 this.pointRadius = 2
             }
 
@@ -565,5 +568,4 @@ tr:hover {
 .linhaDispositivo:hover {
     transition: 200ms linear;
     box-shadow: 0 0 8px 1px #444444;
-}
-</style>
+}</style>
