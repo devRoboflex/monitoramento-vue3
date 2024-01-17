@@ -1,13 +1,21 @@
 <template>
+    <header
+        style="font-size: 25px; background: linear-gradient(180deg, #2D2D2D 0%, #282929 51.54%, #181818 100%); padding: 0.5rem 0 0.5rem 0;">
+        <div style="margin-left: 1rem; margin-top: 0.5rem;" class="position-absolute top-0 start-0">
+            <i @click="buscarDispositivos()" class="bi bi-house"></i>
+        </div>
+        <h2 id="tituloHistorico" style="display: none;">Histórico de parâmetros</h2>
+        <h2 id="tituloLista" >Dispositivos Monitorados</h2>
+    </header>
     <div id="lista" class="container">
         <div>
             <div style="text-align: center; border-bottom: 1; margin-top: 1rem;">
-                <h3 class="titulo">Dispositivos Monitorados</h3>
                 <div style="text-align: right;">
                     <button v-b-tooltip.hover title="Baixar Aplicativo!"
                         style="border: none; background-color: transparent; margin-left: 0.5rem;margin-bottom: 0.5rem ;font-size: 15px; align-self: center; margin-top: 1rem;"
                         id="botaoDownload">
-                        <a href="https://drive.google.com/file/d/1OThUkpJsquMQweXyxH-RdJ882hioqpOV/view?usp=sharing" style="color: black">
+                        <a href="https://drive.google.com/file/d/1OThUkpJsquMQweXyxH-RdJ882hioqpOV/view?usp=sharing"
+                            style="color: black">
                             <i class="fa-solid fa-download"></i>
                         </a>
                     </button>
@@ -24,7 +32,7 @@
                     <th scope="col">Saúde</th>
                 </tr>
 
-                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo" class="linhaDispositivo"
+                <tr v-for="dispositivo in listaDispositivos" :key="dispositivo" class="linhaDispositivo" style="border-radius: 5px;"
                     @click="definirId(dispositivo.id); definirModeloDispositivo(dispositivo.dispositivo_cod)">
                     <td>
                         {{ dispositivo.dispositivo_cod }}
@@ -50,17 +58,10 @@
 
     <div id="painel" style="display: none;">
 
-        <header style="font-size: 25px; background: linear-gradient(180deg, #2D2D2D 0%, #282929 51.54%, #181818 100%); padding: 0.5rem 0 0.5rem 0;">
-            <div style="margin-left: 1rem; margin-top: 0.5rem;" class="position-absolute top-0 start-0">
-                <i @click="buscarDispositivos()" class="bi bi-house"></i>
-            </div>
-            <h2>Histórico de parâmetros</h2>
-        </header>
-
         <div style="display: flex; width: 100%">
             <div style="display: flex; width: 50%;">
                 <h1 style="align-self: center; margin-left: 1rem; margin-top: 1rem;">{{ modeloDispositivo }}</h1>
-                <button v-b-tooltip.hover title="Baixar XML!"
+                <button v-b-tooltip.hover title="Baixar Relatório"
                     style="border: none; background-color: transparent; margin-left: 0.5rem; font-size: 20px; align-self: center; margin-top: 1rem;"
                     @click="baixarXML()" id="botaoDownload">
                     <i class="bi bi-file-earmark-arrow-down"></i>
@@ -82,8 +83,8 @@
                     <div style="display: flex;">
                         <input style="width: 9rem;border: 1px solid black;" type="date" class="form-control"
                             v-model="dataFinal" @change="coletarDados">
-                        <input style="margin-left: 0.2rem;border: 1px solid black;" type="time"
-                            class="form-control" v-model="tempoFinal" @change="coletarDados">
+                        <input style="margin-left: 0.2rem;border: 1px solid black;" type="time" class="form-control"
+                            v-model="tempoFinal" @change="coletarDados">
                     </div>
                 </div>
             </div>
@@ -192,23 +193,25 @@ export default {
                 dispositivo_id: this.idDispositivo,
                 dt_inicio: this.dataInicial + ' ' + this.tempoInicial + ':00',
                 dt_fim: this.dataFinal + ' ' + this.tempoFinal + ':00',
+            }, {
+                responseType: 'arraybuffer',  // Certifique-se de configurar a resposta como arraybuffer
             })
                 .then((response) => {
-                    // Cria um blob a partir dos dados recebidos
-                    const blob = new Blob([response.data], { type: 'application/zip' });
+                    let dispositivo = this.modeloDispositivo
+                    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-                    // Cria uma URL temporária para o blob
-                    const url = window.URL.createObjectURL(blob);
-
-                    // Cria um link para simular o clique e fazer o download
+                    // Cria um link temporário
                     const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'arquivo.zip'; // Pode personalizar o nome do arquivo aqui
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = `Relatório_dispositivo_${dispositivo}.xlsx`;0,
+
+                    // Adiciona o link ao documento
                     document.body.appendChild(link);
+
+                    // Dispara o clique no link para iniciar o download
                     link.click();
 
-                    // Libera a URL e remove o link
-                    window.URL.revokeObjectURL(url);
+                    // Remove o link do documento
                     document.body.removeChild(link);
                 })
                 .catch((error) => {
@@ -239,6 +242,8 @@ export default {
         },
 
         buscarDispositivos() {
+            document.getElementById('tituloLista').style.display = "";
+            document.getElementById('tituloHistorico').style.display = "none";
             document.getElementById('painel').style.display = "none";
             document.getElementById('lista').style.display = ""
 
@@ -273,6 +278,8 @@ export default {
 
             this.dadosDispositivo = ""
 
+            document.getElementById('tituloLista').style.display = "none"
+            document.getElementById('tituloHistorico').style.display = ""
             document.getElementById('painel').style.display = "";
             document.getElementById('lista').style.display = "none"
 
@@ -546,7 +553,7 @@ tr:hover {
 }
 
 .linhaDispositivo:hover {
-    transition: 150ms linear;
-    transform: scale(1.1);
+    transition: 200ms linear;
+    box-shadow: 0 0 8px 1px #444444;
 }
 </style>
