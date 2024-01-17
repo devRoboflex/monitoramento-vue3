@@ -27,10 +27,10 @@
                 <tr>
                     <th scope="col">Código do Dispositivo</th>
                     <th scope="col">Marca</th>
-                    <th scope="col">Última atualização</th>
+                    <th scope="col">Periodo do último monitoramento</th>
                     <th scope="col">Status</th>
                     <th scope="col">Saúde</th>
-                </tr>
+                </tr> 
 
                 <tr v-for="dispositivo in listaDispositivos" :key="dispositivo" class="linhaDispositivo" style="border-radius: 5px;"
                     @click="definirId(dispositivo.id); definirModeloDispositivo(dispositivo.dispositivo_cod)">
@@ -41,9 +41,12 @@
                         {{ dispositivo.marca }}
                     </td>
                     <td>
-                        {{ formatarData(dispositivo.created_at.slice(0, -17)) + ' às ' + new
-                            Date(dispositivo.created_at).getHours() + ':' + new
-                            Date(dispositivo.created_at).getMinutes() + 'h' }}
+                        <!-- {{ formatarData(dispositivo.dt_inicio.slice(0, -9)) + ' às ' + new 
+                            Date(dispositivo.dt_inicio).getHours() + ':' + new
+                            Date(dispositivo.dt_inicio).getMinutes() + 'h' }} -->
+
+                             {{ formatarData(dispositivo.dt_inicio.slice(0, -9))  + " às " + dispositivo.dt_inicio.slice(11).slice(0, -3) + "h - " }} {{ dispositivo.dt_fim == null ? 'Em andamento...' : formatarData(dispositivo.dt_fim.slice(0, -9))  + " às " + dispositivo.dt_fim.slice(11).slice(0, -3) }}
+
                     </td>
                     <td>
                         {{ dispositivo.bateriaStatus_nome }}
