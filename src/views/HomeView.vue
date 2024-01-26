@@ -145,7 +145,6 @@
                     </div>
                     <div style="padding: 0.3em;" id="canvaTemperatura">
                         <canvas style="z-index: 8888;" id="temperatura"></canvas>
-                        {{ teste }}
                     </div>
                 </div>
 
