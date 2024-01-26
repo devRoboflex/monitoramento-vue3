@@ -46,9 +46,11 @@
                             Date(dispositivo.dt_inicio).getHours() + ':' + new
                             Date(dispositivo.dt_inicio).getMinutes() + 'h' }} -->
 
-                        {{ formatarData(dispositivo.dt_inicio.slice(0, -9)) + " às " +
+                        <!-- {{ formatarData(dispositivo.dt_inicio.slice(0, -9)) + " às " +
                             dispositivo.dt_inicio.slice(11).slice(0, -3) + "h - " }} {{ dispositivo.dt_fim == null ? 'Em andamento...' : formatarData(dispositivo.dt_fim.slice(0, -9)) + " às " +
-                    dispositivo.dt_fim.slice(11).slice(0, -3) }}
+                    dispositivo.dt_fim.slice(11).slice(0, -3) }} -->
+
+                    {{ dispositivo.created_at }}
 
                     </td>
                     <td>
@@ -145,7 +147,6 @@
                     </div>
                     <div style="padding: 0.3em;" id="canvaTemperatura">
                         <canvas style="z-index: 8888;" id="temperatura"></canvas>
-                        {{ teste }}
                     </div>
                 </div>
 
@@ -184,8 +185,7 @@ export default {
             dataFinal: "",
             dadosDispositivo: "",
             modeloDispositivo: "",
-            pointRadius: 1,
-            teste: []
+            pointRadius: 1
         }
     },
 
@@ -197,7 +197,7 @@ export default {
 
     methods: {
         baixarXML() {
-            axios.post('http://192.168.0.5:8000/api/relatorio/monitorar-bateria', {
+            axios.post('http://192.168.0.6:8000/api/relatorio/monitorar-bateria', {
                 dispositivo_id: this.idDispositivo,
                 dt_inicio: this.dataInicial + ' ' + this.tempoInicial + ':00',
                 dt_fim: this.dataFinal + ' ' + this.tempoFinal + ':00',
@@ -255,7 +255,7 @@ export default {
             document.getElementById('painel').style.display = "none";
             document.getElementById('lista').style.display = ""
 
-            axios.get('http://192.168.0.5:8000/api/dispositivo', {})
+            axios.get('http://192.168.0.6:8000/api/dispositivo', {})
                 .then((response) => {
                     this.listaDispositivos = response.data.data;
                 })
@@ -291,7 +291,7 @@ export default {
             document.getElementById('painel').style.display = "";
             document.getElementById('lista').style.display = "none"
 
-            axios.post('http://192.168.0.5:8000/api/monitor-bateria', {
+            axios.post('http://192.168.0.6:8000/api/monitor-bateria', {
                 dispositivo_id: this.idDispositivo,
                 dt_inicio: this.dataInicial + ' ' + this.tempoInicial + ':00',
                 dt_fim: this.dataFinal + ' ' + this.tempoFinal + ':00',
@@ -315,11 +315,12 @@ export default {
                 document.getElementById('avisoTemperatura').style.display = "none"
             }
 
-            let foteDeDados = this.dadosDispositivo;
 
-            let dados = foteDeDados.map(item => item.temperatura / 10);
+            let dados = this.dadosDispositivo.map(item => item.temperatura);
+            dados = dados.map(temp => temp / 10);
 
-            let labels = foteDeDados.map(item => item.created_at).map(dataString => this.extrairHoraDeString(dataString));
+            let labels = this.dadosDispositivo.map(item => item.created_at);
+            labels = labels.map(dataString => this.extrairHoraDeString(dataString));
 
             if (labels.length > 100) {
                 this.pointRadius = 0
@@ -351,13 +352,18 @@ export default {
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
-                    },
                     plugins: {
                         legend: {
                             display: false,
+                            // labels: {
+                            //     boxWidth: 25,
+                            //     boxHeight: 10,
+                            //     color: 'rgb(0, 0, 0)',
+                            //     font: {
+                            //         size: 15,
+                            //         weight: 'bolder'
+                            //     }
+                            // }
                         }
                     },
                 },
@@ -409,10 +415,6 @@ export default {
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
-                    },
                     plugins: {
                         legend: {
                             display: false,
@@ -473,7 +475,7 @@ export default {
                     maintainAspectRatio: true,
                     interaction: {
                         intersect: false,
-                        mode: 'index',
+                        mode: 'x',
                     },
                     plugins: {
                         legend: {
@@ -542,7 +544,7 @@ export default {
                     maintainAspectRatio: true,
                     interaction: {
                         intersect: false,
-                        mode: 'index',
+                        mode: 'x',
                     },
                     plugins: {
                         legend: {
