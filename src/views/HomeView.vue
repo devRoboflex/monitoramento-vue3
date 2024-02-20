@@ -1,7 +1,6 @@
 <template>
-    <br><br>
     <header
-        style="font-size: 25px; background: linear-gradient(180deg, #2D2D2D 0%, #282929 51.54%, #181818 100%); padding: 0.5rem 0 0.5rem 0; margin-top: 2.5rem; width: 100%;">
+        style="font-size: 25px; background: linear-gradient(180deg, #2D2D2D 0%, #282929 51.54%, #181818 100%); padding: 0.5rem 0 0.5rem 0; width: 100%;">
         <div style="margin-left: 1rem; margin-top: 0.5rem;" class="position-absolute top-0 start-0">
             <i @click="buscarDispositivos()" class="bi bi-house"></i>
         </div>

@@ -1,9 +1,8 @@
 <template>
-    <br><br>
     <header
-        style="font-size: 25px; background: linear-gradient(180deg, #2D2D2D 0%, #282929 51.54%, #181818 100%); padding: 0.5rem 0 0.5rem 0; margin-top: 2.5rem; width: 100%;">
+        style="font-size: 25px; background: linear-gradient(180deg, #2D2D2D 0%, #282929 51.54%, #181818 100%); padding: 0.5rem 0 0.5rem 0; width: 100%;">
         <div style="margin-left: 1rem; margin-top: 0.5rem; z-index: 999999;" class="position-absolute top-10 start-0">
-            <i @click="this.$router.push('/home');" class="bi bi-house"></i>
+            <i @click="this.$router.push('/');" class="bi bi-house"></i>
         </div>
         <h2 id="tituloHistorico">Histórico de parâmetros</h2>
     </header>
@@ -64,8 +63,11 @@
                         </div>
                     </div>
 
-                    <div style="padding: 0.3em;" id="avisoBateria" class="aviso">
+                    <div style="padding: 0.3em; display: none;" id="avisoBateria" class="aviso">
                         Nenhum dado encontrado no período selecionado!
+                    </div>
+                    <div style="padding: 0.3em; display: flex" id="carregandoBateria">
+                        <div class="spinner-border" role="status"></div>
                     </div>
 
                     <div id="canvaBateria">
@@ -74,8 +76,11 @@
                 </div>
                 <div class="card mb-3" style="height: fit-content ;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                     <div style="border-bottom: 1px solid rgb(0, 0, 0)">Corrente (ma)</div>
-                    <div style="padding: 0.3em;" id="avisoCorrente" class="aviso">
+                    <div style="padding: 0.3em; display: none;" id="avisoCorrente" class="aviso">
                         Nenhum dado encontrado no período selecionado!
+                    </div>
+                    <div style="padding: 0.3em; display: flex" id="carregandoCorrente">
+                        <div class="spinner-border" role="status"></div>
                     </div>
                     <div style="padding: 0.3em;" id="canvaCorrente">
                         <canvas id="Corrente"></canvas>
@@ -86,8 +91,11 @@
             <div style="display: flex; flex-flow: column; width: 50%; height: fit-content; align-self: baseline;">
                 <div class="card mb-3" style=" height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                     <div style="border-bottom: 1px solid rgb(0, 0, 0)">Temperatura (C°)</div>
-                    <div style="padding: 0.3em;" id="avisoTemperatura" class="aviso">
+                    <div style="padding: 0.3em; display: none;" id="avisoTemperatura" class="aviso">
                         Nenhum dado encontrado no período selecionado!
+                    </div>
+                    <div style="padding: 0.3em; display: flex" id="carregandoTemperatura">
+                        <div class="spinner-border" role="status"></div>
                     </div>
                     <div style="padding: 0.3em;" id="canvaTemperatura">
                         <canvas style="z-index: 8888;" id="temperatura"></canvas>
@@ -96,8 +104,11 @@
 
                 <div class="card mb-3" style="height: fit-content;border: 1px solid rgb(0, 0, 0); margin: 0.5rem;">
                     <div style="border-bottom: 1px solid rgb(0, 0, 0)">Tensão (v)</div>
-                    <div style="padding: 0.3em;" id="avisoTensao" class="aviso">
+                    <div style="padding: 0.3em; display: none;" id="avisoTensao" class="aviso">
                         Nenhum dado encontrado no período selecionado!
+                    </div>
+                    <div style="padding: 0.3em; display: flex" id="carregandoTensao">
+                        <div class="spinner-border" role="status"></div>
                     </div>
                     <div style="padding: 0.3em;" id="canvaTensao">
                         <canvas id="tensao"></canvas>
@@ -173,11 +184,12 @@ export default {
                 this.idDispositivo = sessionStorage.getItem('idDispositivo');
                 this.dataInicial = sessionStorage.getItem('dataInicial');
                 this.dataFinal = sessionStorage.getItem('dataFinal');
+                this.modeloDispositivo = sessionStorage.getItem('modelo');
 
                 axios.post('http://192.168.0.5:8000/api/monitor-bateria', {
                     dispositivo_id: this.idDispositivo,
-                    dt_inicio: this.dataInicial,
-                    dt_fim: this.dataFinal,
+                    dt_inicio: this.dataInicial + ' ' + this.tempoInicial + ':00',
+                    dt_fim: this.dataFinal + ' ' + this.tempoFinal + ':00',
                 })
                     .then((response) => {
                         this.dadosDispositivo = response.data;
@@ -189,6 +201,7 @@ export default {
                 sessionStorage.setItem('idDispositivo', this.idDispositivo);
                 sessionStorage.setItem('dataInicial', this.dataInicial);
                 sessionStorage.setItem('dataFinal', this.dataFinal);
+                sessionStorage.setItem('modelo', this.modeloDispositivo);
             } else {
                 axios.post('http://192.168.0.5:8000/api/monitor-bateria', {
                     dispositivo_id: this.$store.state.idDispositivo,
@@ -203,8 +216,9 @@ export default {
                         console.error(error);
                     });
                 sessionStorage.setItem('idDispositivo', this.idDispositivo);
-                sessionStorage.setItem('dataInicial', this.dataInicial + ' ' + this.tempoInicial + ':00',);
-                sessionStorage.setItem('dataFinal', this.dataFinal + ' ' + this.tempoFinal + ':00',);
+                sessionStorage.setItem('dataInicial', this.dataInicial);
+                sessionStorage.setItem('dataFinal', this.dataFinal);
+                sessionStorage.setItem('modelo', this.modeloDispositivo);
             }
 
 
@@ -219,10 +233,38 @@ export default {
             document.getElementById('canvaTensao').style.display = "none";
             document.getElementById('canvaCorrente').style.display = "none";
 
-            document.getElementById('avisoTemperatura').style.display = "";
-            document.getElementById('avisoBateria').style.display = "";
-            document.getElementById('avisoTensao').style.display = "";
-            document.getElementById('avisoCorrente').style.display = "";
+            document.getElementById('carregandoTemperatura').style.display = "";
+            setTimeout(() => {
+                document.getElementById('carregandoTemperatura').style.display = "none";
+                if(this.dadosDispositivo == ""){
+                    document.getElementById('avisoTemperatura').style.display = "";
+                }
+            }, 1000);
+
+            document.getElementById('carregandoBateria').style.display = "";
+            setTimeout(() => {
+                document.getElementById('carregandoBateria').style.display = "none";
+                if(this.dadosDispositivo == ""){
+                    document.getElementById('avisoBateria').style.display = "";
+                }
+            }, 1000);
+            
+            document.getElementById('carregandoTensao').style.display = "";
+            setTimeout(() => {
+                document.getElementById('carregandoTensao').style.display = "none";
+                if(this.dadosDispositivo == ""){
+                    document.getElementById('avisoTensao').style.display = "";
+                }
+            }, 1000);
+
+            document.getElementById('carregandoCorrente').style.display = "";
+            setTimeout(() => {
+                document.getElementById('carregandoCorrente').style.display = "none";
+                if(this.dadosDispositivo == ""){
+                    document.getElementById('avisoCorrente').style.display = "";
+                }
+            }, 1000);
+
         },
 
         extrairHoraDeString(dataString) {
@@ -236,7 +278,8 @@ export default {
 
             if (this.dadosDispositivo != "") {
                 document.getElementById('canvaTemperatura').style.display = "";
-                document.getElementById('avisoTemperatura').style.display = "none"
+                document.getElementById('carregandoTemperatura').style.display = "none";
+                document.getElementById('avisoTemperatura').style.display = "none";
             }
 
             let foteDeDados = this.dadosDispositivo;
@@ -294,6 +337,7 @@ export default {
             if (this.dadosDispositivo != "") {
                 document.getElementById('canvaBateria').style.display = "";
                 document.getElementById('avisoBateria').style.display = "none"
+                document.getElementById('carregandoBateria').style.display = "none";
             }
 
             this.saudeBateria = this.dadosDispositivo.map(item => item.bateriaSaude_nome);
@@ -357,7 +401,8 @@ export default {
 
             if (this.dadosDispositivo != "") {
                 document.getElementById('canvaTensao').style.display = "";
-                document.getElementById('avisoTensao').style.display = "none"
+                document.getElementById('avisoTensao').style.display = "none";
+                document.getElementById('carregandoTensao').style.display = "none";
             }
 
             let dados = this.dadosDispositivo.map(item => item.voltagem);
@@ -413,7 +458,8 @@ export default {
         graficoCorrente() {
             if (this.dadosDispositivo != "") {
                 document.getElementById('canvaCorrente').style.display = "";
-                document.getElementById('avisoCorrente').style.display = "none"
+                document.getElementById('avisoCorrente').style.display = "none";
+                document.getElementById('carregandoCorrente').style.display = "none";
             }
 
             let dadosCorrenteA = this.dadosDispositivo.map(item => item.energiaAtual_ma);

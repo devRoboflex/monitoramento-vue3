@@ -1,7 +1,7 @@
 <template>
-  <div class="menu">
+  <!-- <div class="menu">
     <MenuComponent v-if="!$route.meta.hideMenu"></MenuComponent>
-  </div>
+  </div> -->
   <div>
     <RouterView />
     <br><br><br>
@@ -11,7 +11,7 @@
 
 <script>
 import FooterComponent from './components/FooterComponent.vue';
-import MenuComponent from "./components/menu/MenuComponent.vue";
+// import MenuComponent from "./components/menu/MenuComponent.vue";
 
 
 export default {
@@ -23,7 +23,7 @@ export default {
 
   components: {
     FooterComponent: FooterComponent,
-    MenuComponent: MenuComponent
+    // MenuComponent: MenuComponent
 
   }
 }
